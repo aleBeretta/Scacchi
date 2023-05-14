@@ -17,7 +17,7 @@ class Square:
 
         self.x=x
         self.xtot=x*larg
-
+        
         self.y=y
         self.ytot=y*alt
 
