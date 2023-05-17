@@ -10,6 +10,8 @@ pygame.display.set_caption("Finestra base")
 clock=pygame.time.Clock()
 fps=60
 
+        
+
 class Square:
     def __init__(self, x, y, larg, alt) -> None:
         self.larg=larg
@@ -32,6 +34,9 @@ class Square:
         if self.pezzo!=None:
             pass
 
+class Board:
+    def __init__(self) -> None:
+        self.matr=[[Square() for c in range(8)] for r in range(8)]
 
 
 class Pawn:
