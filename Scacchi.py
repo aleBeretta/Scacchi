@@ -21,6 +21,8 @@ class Square:
         self.y=y
         self.ytot=y*alt+84
 
+        self.coord=(self.xtot,self.ytot)
+
         self.color="light" if (x+y)%2==0 else "dark"
         self.norm_color=(245, 237, 198) if self.color=="light" else(75,37,17)
         
@@ -39,11 +41,11 @@ class Pawn:
         self.pos=pos
     
     def draw(self):
-        self.image=pygame.image.load("pb.png").convert() if self.colore=="B" else pygame.image.load("pn.png").convert()
+        self.image=pygame.image.load("pb.png").convert_alpha() if self.colore=="B" else pygame.image.load("pn.png").convert_alpha()
         self.rect=self.image.get_rect(topleft=self.pos)
-        self.rect.width=40
-        self.rect.height=40
-        self.image=pygame.transform.scale(self.image,(40,40))
+        self.rect.width=64
+        self.rect.height=64
+        self.image=pygame.transform.scale(self.image,(64,64))
         screen.blit(self.image, self.rect)
 
 class King:
@@ -52,11 +54,11 @@ class King:
         self.pos=pos
     
     def draw(self):
-        self.image=pygame.image.load("reb.png").convert() if self.colore=="B" else pygame.image.load("ren.png").convert()
-        self.rect=self.image.get_rect()
-        self.rect.topleft=self.pos
-        self.rect.width=40
-        self.rect.height=40
+        self.image=pygame.image.load("reb.png").convert_alpha() if self.colore=="B" else pygame.image.load("ren.png").convert_alpha()
+        self.rect=self.image.get_rect(topleft=self.pos)
+        self.rect.width=64
+        self.rect.height=64
+        self.image=pygame.transform.scale(self.image,(64,64))
         screen.blit(self.image, self.rect)
 
 class Queen:
@@ -65,11 +67,11 @@ class Queen:
         self.pos=pos
     
     def draw(self):
-        self.image=pygame.image.load("regb.png").convert() if self.colore=="B" else pygame.image.load("regn.png").convert()
-        self.rect=self.image.get_rect()
-        self.rect.topleft=self.pos
-        self.rect.width=40
-        self.rect.height=40
+        self.image=pygame.image.load("regb.png").convert_alpha() if self.colore=="B" else pygame.image.load("regn.png").convert_alpha()
+        self.rect=self.image.get_rect(topleft=self.pos)
+        self.rect.width=64
+        self.rect.height=64
+        self.image=pygame.transform.scale(self.image,(64,64))
         screen.blit(self.image, self.rect)
 
 class Bishop:
@@ -78,13 +80,12 @@ class Bishop:
         self.pos=pos
     
     def draw(self):
-        self.image=pygame.image.load("ab.png").convert() if self.colore=="B" else pygame.image.load("an.png").convert()
-        self.rect=self.image.get_rect()
-        self.rect.topleft=self.pos
-        self.rect.width=40
-        self.rect.height=40
+        self.image=pygame.image.load("ab.png").convert_alpha() if self.colore=="B" else pygame.image.load("an.png").convert_alpha()
+        self.rect=self.image.get_rect(topleft=self.pos)
+        self.rect.width=64
+        self.rect.height=64
+        self.image=pygame.transform.scale(self.image,(64,64))
         screen.blit(self.image, self.rect)
-
 
 class Knight:
     def __init__(self, colore, pos=None) -> None:
@@ -92,11 +93,11 @@ class Knight:
         self.pos=pos
     
     def draw(self):
-        self.image=pygame.image.load("cb.png").convert() if self.colore=="B" else pygame.image.load("cn.png").convert()
-        self.rect=self.image.get_rect()
-        self.rect.topleft=self.pos
-        self.rect.width=40
-        self.rect.height=40
+        self.image=pygame.image.load("cb.png").convert_alpha() if self.colore=="B" else pygame.image.load("cn.png").convert_alpha()
+        self.rect=self.image.get_rect(topleft=self.pos)
+        self.rect.width=64
+        self.rect.height=64
+        self.image=pygame.transform.scale(self.image,(64,64))
         screen.blit(self.image, self.rect)
 
 class Rook:
@@ -105,11 +106,11 @@ class Rook:
         self.pos=pos
     
     def draw(self):
-        self.image=pygame.image.load("tb.png").convert() if self.colore=="B" else pygame.image.load("tn.png").convert()
-        self.rect=self.image.get_rect()
-        self.rect.topleft=self.pos
-        self.rect.width=40
-        self.rect.height=40
+        self.image=pygame.image.load("tb.png").convert_alpha() if self.colore=="B" else pygame.image.load("tn.png").convert_alpha()
+        self.rect=self.image.get_rect(topleft=self.pos)
+        self.rect.width=64
+        self.rect.height=64
+        self.image=pygame.transform.scale(self.image,(64,64))
         screen.blit(self.image, self.rect)
 
 
@@ -129,9 +130,23 @@ class Board:
             pezzo.draw()
 
 Scacchiera=Board()
+Scacchiera.board[0][0].pezzo, Scacchiera.board[0][7].pezzo=Rook("N", Scacchiera.board[0][0].coord), Rook("N", Scacchiera.board[0][7].coord)
+Scacchiera.board[7][0].pezzo, Scacchiera.board[7][7].pezzo=Rook("B", Scacchiera.board[7][0].coord), Rook("B", Scacchiera.board[7][7].coord)
+Scacchiera.board[0][1].pezzo, Scacchiera.board[0][6].pezzo=Knight("N", Scacchiera.board[0][1].coord), Knight("N", Scacchiera.board[0][6].coord)
+Scacchiera.board[7][1].pezzo, Scacchiera.board[7][6].pezzo=Knight("B", Scacchiera.board[7][1].coord), Knight("B", Scacchiera.board[7][6].coord)
+Scacchiera.board[0][2].pezzo, Scacchiera.board[0][5].pezzo=Bishop("N", Scacchiera.board[0][2].coord), Bishop("N", Scacchiera.board[0][5].coord)
+Scacchiera.board[7][2].pezzo, Scacchiera.board[7][5].pezzo=Bishop("B", Scacchiera.board[7][2].coord), Bishop("B", Scacchiera.board[7][5].coord)
+Scacchiera.board[0][3].pezzo, Scacchiera.board[0][4].pezzo=Queen("N", Scacchiera.board[0][3].coord), King("N", Scacchiera.board[0][4].coord)
+Scacchiera.board[7][3].pezzo, Scacchiera.board[7][4].pezzo=Queen("B", Scacchiera.board[7][3].coord), King("B", Scacchiera.board[7][4].coord)
 for i in range(8):
-    Scacchiera.board[0][i].pezzo=Pawn("N", (Scacchiera.board[0][i].xtot, Scacchiera.board[0][i].ytot))
+    Scacchiera.board[1][i].pezzo=Pawn("N", Scacchiera.board[1][i].coord)
+    Scacchiera.board[6][i].pezzo=Pawn("B", Scacchiera.board[6][i].coord)
+    Scacchiera.pezzi.append(Scacchiera.board[1][i].pezzo)
+    Scacchiera.pezzi.append(Scacchiera.board[6][i].pezzo)
     Scacchiera.pezzi.append(Scacchiera.board[0][i].pezzo)
+    Scacchiera.pezzi.append(Scacchiera.board[7][i].pezzo)
+
+
 
 while True:
     for event in pygame.event.get():
