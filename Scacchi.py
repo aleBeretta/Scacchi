@@ -10,6 +10,8 @@ pygame.display.set_caption("Scacchi")
 clock=pygame.time.Clock()
 fps=60
 
+print("prova")      
+
 class Square:
     def __init__(self, x, y, larg, alt, pezzo=None) -> None:
         self.larg=larg
@@ -32,6 +34,9 @@ class Square:
     def draw(self):
         pygame.draw.rect(screen, self.norm_color, self.rect)            
 
+class Board:
+    def __init__(self) -> None:
+        self.matr=[[Square() for c in range(8)] for r in range(8)]
 
 
 class Pawn:
