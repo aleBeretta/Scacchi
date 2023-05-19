@@ -10,7 +10,7 @@ pygame.display.set_caption("Finestra base")
 clock=pygame.time.Clock()
 fps=60
 
-        
+print("prova")      
 
 class Square:
     def __init__(self, x, y, larg, alt) -> None:
