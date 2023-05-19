@@ -39,78 +39,78 @@ class Pawn:
     def __init__(self, colore, pos=None) -> None:
         self.colore=colore
         self.pos=pos
-    
-    def draw(self):
         self.image=pygame.image.load("pb.png").convert_alpha() if self.colore=="B" else pygame.image.load("pn.png").convert_alpha()
         self.rect=self.image.get_rect(topleft=self.pos)
         self.rect.width=64
         self.rect.height=64
         self.image=pygame.transform.scale(self.image,(64,64))
+    
+    def draw(self):
         screen.blit(self.image, self.rect)
 
 class King:
     def __init__(self, colore, pos=None) -> None:
         self.colore=colore
         self.pos=pos
-    
-    def draw(self):
         self.image=pygame.image.load("reb.png").convert_alpha() if self.colore=="B" else pygame.image.load("ren.png").convert_alpha()
         self.rect=self.image.get_rect(topleft=self.pos)
         self.rect.width=64
         self.rect.height=64
         self.image=pygame.transform.scale(self.image,(64,64))
+    
+    def draw(self):
         screen.blit(self.image, self.rect)
 
 class Queen:
     def __init__(self, colore, pos=None) -> None:
         self.colore=colore
         self.pos=pos
-    
-    def draw(self):
         self.image=pygame.image.load("regb.png").convert_alpha() if self.colore=="B" else pygame.image.load("regn.png").convert_alpha()
         self.rect=self.image.get_rect(topleft=self.pos)
         self.rect.width=64
         self.rect.height=64
         self.image=pygame.transform.scale(self.image,(64,64))
+    
+    def draw(self):
         screen.blit(self.image, self.rect)
 
 class Bishop:
     def __init__(self, colore, pos=None) -> None:
         self.colore=colore
         self.pos=pos
-    
-    def draw(self):
         self.image=pygame.image.load("ab.png").convert_alpha() if self.colore=="B" else pygame.image.load("an.png").convert_alpha()
         self.rect=self.image.get_rect(topleft=self.pos)
         self.rect.width=64
         self.rect.height=64
         self.image=pygame.transform.scale(self.image,(64,64))
+    
+    def draw(self):
         screen.blit(self.image, self.rect)
 
 class Knight:
     def __init__(self, colore, pos=None) -> None:
         self.colore=colore
         self.pos=pos
-    
-    def draw(self):
         self.image=pygame.image.load("cb.png").convert_alpha() if self.colore=="B" else pygame.image.load("cn.png").convert_alpha()
         self.rect=self.image.get_rect(topleft=self.pos)
         self.rect.width=64
         self.rect.height=64
         self.image=pygame.transform.scale(self.image,(64,64))
+    
+    def draw(self):
         screen.blit(self.image, self.rect)
 
 class Rook:
     def __init__(self, colore, pos=None) -> None:
         self.colore=colore
         self.pos=pos
-    
-    def draw(self):
         self.image=pygame.image.load("tb.png").convert_alpha() if self.colore=="B" else pygame.image.load("tn.png").convert_alpha()
         self.rect=self.image.get_rect(topleft=self.pos)
         self.rect.width=64
         self.rect.height=64
         self.image=pygame.transform.scale(self.image,(64,64))
+    
+    def draw(self):
         screen.blit(self.image, self.rect)
 
 
@@ -153,9 +153,18 @@ while True:
         if event.type==QUIT:
             pygame.quit()
             sys.exit()
-        
-    Scacchiera.draw()
-        
 
+        if event.type==pygame.MOUSEBUTTONDOWN and event.button==1:
+            pos = pygame.mouse.get_pos()
+            for pezzo in Scacchiera.pezzi:
+                if pezzo.rect.collidepoint(pos):
+                    pass
+                    # pezzo.move()
+
+    Scacchiera.draw()
+
+
+    
+    
     pygame.display.update()
     clock.tick(fps)
