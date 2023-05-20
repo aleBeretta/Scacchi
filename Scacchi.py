@@ -34,9 +34,6 @@ class Square:
     def draw(self):
         pygame.draw.rect(screen, self.norm_color, self.rect)            
 
-class Board:
-    def __init__(self) -> None:
-        self.matr=[[Square() for c in range(8)] for r in range(8)]
 
 
 class Pawn:
@@ -158,9 +155,26 @@ Scacchiera=Board()
 #     Scacchiera.pezzi.append(Scacchiera.board[7][i].pezzo)
 
 for i in range(8):
-    {
-        Scacchiera.pezzi.append(Pawn("N", (0,7)))
-    }
+    Scacchiera.pezzi.append(Pawn("N", (1,i)))
+    Scacchiera.pezzi.append(Pawn("B", (6,i)))
+Scacchiera.pezzi.append(Rook("N", (0, 0)))
+Scacchiera.pezzi.append(Rook("N", (0, 7)))
+Scacchiera.pezzi.append(Rook("B", (7, 0)))
+Scacchiera.pezzi.append(Rook("B", (7, 7)))
+Scacchiera.pezzi.append(Knight("N", (0, 1)))
+Scacchiera.pezzi.append(Knight("N", (0, 6)))
+Scacchiera.pezzi.append(Knight("B", (7, 1)))
+Scacchiera.pezzi.append(Knight("B", (7, 6)))
+Scacchiera.pezzi.append(Bishop("N", (0, 2)))
+Scacchiera.pezzi.append(Bishop("N", (0, 5)))
+Scacchiera.pezzi.append(Bishop("B", (7, 2)))
+Scacchiera.pezzi.append(Bishop("B", (7, 5)))
+Scacchiera.pezzi.append(King("N", (0, 4)))
+Scacchiera.pezzi.append(King("B", (7, 4)))
+Scacchiera.pezzi.append(Queen("N", (0, 3)))
+Scacchiera.pezzi.append(Queen("B", (7, 3)))
+
+
 
 
 
