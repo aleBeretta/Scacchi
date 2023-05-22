@@ -12,8 +12,49 @@ clock = pygame.time.Clock()
 fps = 60
 
 
+
+class Board:
+    def __init__(self, screen, size) -> None:
+        self.board = [[Square(c, r, 64, 64) for c in range(8)]
+                      for r in range(8)]
+        self.size=size
+        self.pezzi = []
+        self.image=pygame.Surface(size)
+        x = screen.get_width() // 2 - size[0] // 2
+        y = screen.get_height() // 2 - size[1] // 2
+        self.rect=pygame.Rect(x, y, size[0], size[1])
+
+    def inizializza(self):
+        for i in range(8):
+            self.pezzi.append(Pawn("N", (1, i)))
+            self.pezzi.append(Pawn("B", (6, i)))
+        self.pezzi.append(Rook("N", (0, 0)))
+        self.pezzi.append(Rook("N", (0, 7)))
+        self.pezzi.append(Rook("B", (7, 0)))
+        self.pezzi.append(Rook("B", (7, 7)))
+        self.pezzi.append(Knight("N", (0, 1)))
+        self.pezzi.append(Knight("N", (0, 6)))
+        self.pezzi.append(Knight("B", (7, 1)))
+        self.pezzi.append(Knight("B", (7, 6)))
+        self.pezzi.append(Bishop("N", (0, 2)))
+        self.pezzi.append(Bishop("N", (0, 5)))
+        self.pezzi.append(Bishop("B", (7, 2)))
+        self.pezzi.append(Bishop("B", (7, 5)))
+        self.pezzi.append(King("N", (0, 4)))
+        self.pezzi.append(King("B", (7, 4)))
+        self.pezzi.append(Queen("N", (0, 3)))
+        self.pezzi.append(Queen("B", (7, 3)))        
+
+    def draw(self):
+        for r in range(8):
+            for c in range(8):
+                self.board[r][c].draw()
+        screen.blit(self.image, self.rect)
+
+
+
 class Square:
-    def __init__(self, x, y, larg, alt, pezzo=None) -> None:
+    def __init__(self, board, x, y, larg, alt, pezzo=None) -> None:
         self.larg = larg
         self.alt = alt
 
@@ -28,29 +69,30 @@ class Square:
         self.color = "light" if (x+y) % 2 == 0 else "dark"
         self.norm_color = (245, 237, 198) if self.color == "light" else (75, 37, 17)
 
+        self.image=pygame.Surface((self.larg, self.alt))
         self.rect = pygame.Rect(self.xtot, self.ytot, self.larg, self.alt)
         self.pezzo = pezzo
 
+        self.board=board
+
     def draw(self):
-        pygame.draw.rect(screen, self.norm_color, self.rect)
+        self.image.fill(self.color)
+        self.pezzo.draw()
+        self.board.image.blit(self.image, self.rect)
 
     def drawcircle(self):
         colore = (0, 65, 10)
         raggio = 15
-        circleimage = pygame.Surface((raggio*2, raggio*2))
-        circlerect = circleimage.get_rect()
-        circlerect.center = self.rect.center
-        print(circlerect.center)
-
-        pygame.draw.circle(circleimage, colore, circlerect.center, raggio)
-        screen.blit(circleimage, circlerect)
+        print(self.rect.center)
+        pygame.draw.circle(screen, colore, self.rect.center, raggio)
 
 
 class Pawn:
-    def __init__(self, colore, coord) -> None:
+    def __init__(self, colore, square) -> None:
         self.colore = colore
-        self.coord = coord
-        self.pos = (self.coord[1]*64+344, self.coord[0]*64+84)
+        self.square=square
+        self.coord=(self.square.x, self.square.y)
+        self.pos = self.square.coord
         self.image = pygame.image.load("pb.png").convert_alpha() if self.colore == "B" else pygame.image.load("pn.png").convert_alpha()
         self.rect = self.image.get_rect(topleft=self.pos)
         self.rect.width = 64
@@ -153,57 +195,10 @@ class Rook:
         screen.blit(self.image, self.rect)
 
 
-class Board:
-    def __init__(self) -> None:
-        self.board = [[Square(c, r, 64, 64) for c in range(8)]
-                      for r in range(8)]
-        self.pezzi = []
 
-    def draw(self):
-        for r in range(8):
-            for c in range(8):
-                self.board[r][c].draw()
-
-        for pezzo in self.pezzi:
-            pezzo.draw()
 
 
 Scacchiera = Board()
-# Scacchiera.board[0][0].pezzo, Scacchiera.board[0][7].pezzo=Rook("N", Scacchiera.board[0][0].coord), Rook("N", Scacchiera.board[0][7].coord)
-# Scacchiera.board[7][0].pezzo, Scacchiera.board[7][7].pezzo=Rook("B", Scacchiera.board[7][0].coord), Rook("B", Scacchiera.board[7][7].coord)
-# Scacchiera.board[0][1].pezzo, Scacchiera.board[0][6].pezzo=Knight("N", Scacchiera.board[0][1].coord), Knight("N", Scacchiera.board[0][6].coord)
-# Scacchiera.board[7][1].pezzo, Scacchiera.board[7][6].pezzo=Knight("B", Scacchiera.board[7][1].coord), Knight("B", Scacchiera.board[7][6].coord)
-# Scacchiera.board[0][2].pezzo, Scacchiera.board[0][5].pezzo=Bishop("N", Scacchiera.board[0][2].coord), Bishop("N", Scacchiera.board[0][5].coord)
-# Scacchiera.board[7][2].pezzo, Scacchiera.board[7][5].pezzo=Bishop("B", Scacchiera.board[7][2].coord), Bishop("B", Scacchiera.board[7][5].coord)
-# Scacchiera.board[0][3].pezzo, Scacchiera.board[0][4].pezzo=Queen("N", Scacchiera.board[0][3].coord), King("N", Scacchiera.board[0][4].coord)
-# Scacchiera.board[7][3].pezzo, Scacchiera.board[7][4].pezzo=Queen("B", Scacchiera.board[7][3].coord), King("B", Scacchiera.board[7][4].coord)
-# for i in range(8):
-#     Scacchiera.board[1][i].pezzo=Pawn("N", Scacchiera.board[1][i].coord)
-#     Scacchiera.board[6][i].pezzo=Pawn("B", Scacchiera.board[6][i].coord)
-#     Scacchiera.pezzi.append(Scacchiera.board[1][i].pezzo)
-#     Scacchiera.pezzi.append(Scacchiera.board[6][i].pezzo)
-#     Scacchiera.pezzi.append(Scacchiera.board[0][i].pezzo)
-#     Scacchiera.pezzi.append(Scacchiera.board[7][i].pezzo)
-
-for i in range(8):
-    Scacchiera.pezzi.append(Pawn("N", (1, i)))
-    Scacchiera.pezzi.append(Pawn("B", (6, i)))
-Scacchiera.pezzi.append(Rook("N", (0, 0)))
-Scacchiera.pezzi.append(Rook("N", (0, 7)))
-Scacchiera.pezzi.append(Rook("B", (7, 0)))
-Scacchiera.pezzi.append(Rook("B", (7, 7)))
-Scacchiera.pezzi.append(Knight("N", (0, 1)))
-Scacchiera.pezzi.append(Knight("N", (0, 6)))
-Scacchiera.pezzi.append(Knight("B", (7, 1)))
-Scacchiera.pezzi.append(Knight("B", (7, 6)))
-Scacchiera.pezzi.append(Bishop("N", (0, 2)))
-Scacchiera.pezzi.append(Bishop("N", (0, 5)))
-Scacchiera.pezzi.append(Bishop("B", (7, 2)))
-Scacchiera.pezzi.append(Bishop("B", (7, 5)))
-Scacchiera.pezzi.append(King("N", (0, 4)))
-Scacchiera.pezzi.append(King("B", (7, 4)))
-Scacchiera.pezzi.append(Queen("N", (0, 3)))
-Scacchiera.pezzi.append(Queen("B", (7, 3)))
 
 for pezzo in Scacchiera.pezzi:
     Scacchiera.board[pezzo.coord[0]][pezzo.coord[1]].pezzo = pezzo
@@ -219,7 +214,6 @@ while True:
             pos = pygame.mouse.get_pos()
             for pezzo in Scacchiera.pezzi:
                 if pezzo.rect.collidepoint(pos):
-                    pezzo.showmoves()
                     possmoves = pezzo.showmoves()
 
     Scacchiera.draw()
