@@ -18,9 +18,9 @@ class Board:
                       for r in range(8)]
         self.size = size
         self.image = pygame.Surface(size)
-        x = screen.get_width() // 2 - size[0] // 2
-        y = screen.get_height() // 2 - size[1] // 2
-        self.rect = pygame.Rect(x, y, size[0], size[1])
+        self.x = screen.get_width() // 2 - size[0] // 2
+        self.y = screen.get_height() // 2 - size[1] // 2
+        self.rect = pygame.Rect(self.x, self.y, size[0], size[1])
 
     def inizializza(self):
         for i in range(8):
@@ -95,20 +95,16 @@ class Pawn:
     def draw(self):
         self.square.image.blit(self.image, self.rect)
 
-    # def showmoves(self):
-    #     possmoves = []
-    #     if self.colore == "N":
-    #         if Scacchiera.board[self.coord[0]+1][self.coord[1]].pezzo == None:
-    #             possmoves.append(
-    #                 Scacchiera.board[self.coord[0]+1][self.coord[1]])
-    #     else:
-    #         if Scacchiera.board[self.coord[0]-1][self.coord[1]].pezzo == None:
-    #             possmoves.append(
-    #                 Scacchiera.board[self.coord[0]-1][self.coord[1]])
+    def showmoves(self):
+        possmoves = []
+        if self.colore == "N":
+            if Scacchiera.board[self.coord[0]][self.coord[1]+1].pezzo == None:
+                possmoves.append(Scacchiera.board[self.coord[0]+1][self.coord[1]])
+        else:
+            if Scacchiera.board[self.coord[0]][self.coord[1]-1].pezzo == None:
+                possmoves.append(Scacchiera.board[self.coord[0]-1][self.coord[1]])
 
-    #     for move in possmoves:
-    #         move.drawcircle()
-    #     return possmoves
+        return possmoves
 
 
 class King:
@@ -213,11 +209,15 @@ while True:
             pygame.quit()
             sys.exit()
 
-    # if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-    #     pos = pygame.mouse.get_pos()
-    #     for pezzo in Scacchiera.pezzi:
-    #         if pezzo.rect.collidepoint(pos):
-    #             possmoves = pezzo.showmoves()
+    if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+        pos = list(pygame.mouse.get_pos())
+        pos[0]+=Scacchiera.x
+        pos[1]+=Scacchiera.y
+        for linea in Scacchiera.board:
+            for casella in linea:
+                if casella.rect.collidepoint(pos) and casella.pezzo!=None:
+                    possmoves=casella.pezzo.showmoves()
+                    print(len(possmoves))
 
     Scacchiera.draw()
 
