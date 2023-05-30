@@ -14,8 +14,8 @@ fps = 60
 
 class Board:
     def __init__(self, screen, size) -> None:
-        self.board = [[Square(self, c, r, size[0]/8, size[1]/8) for c in range(8)]
-                      for r in range(8)]
+        self.board = [[Square(self, y, x, size[0]/8, size[1]/8) for x in range(8)]
+                      for y in range(8)]
         self.size = size
         self.image = pygame.Surface(size)
         self.x = screen.get_width() // 2 - size[0] // 2
@@ -24,23 +24,31 @@ class Board:
 
     def inizializza(self):
         for i in range(8):
-            self.board[1][i].pezzo = Pawn("N", self.board[1][i])
-            self.board[6][i].pezzo = Pawn("B", self.board[6][i])
-        self.board[0][0].pezzo, self.board[0][7].pezzo=Rook("N", self.board[0][0]), Rook("N", self.board[0][7])
-        self.board[7][0].pezzo, self.board[7][7].pezzo=Rook("B", self.board[7][0]), Rook("B", self.board[7][7])
-        self.board[0][1].pezzo, self.board[0][6].pezzo=Knight("N", self.board[0][1]), Knight("N", self.board[0][6])
-        self.board[7][1].pezzo, self.board[7][6].pezzo=Knight("B", self.board[7][1]), Knight("B", self.board[7][6])
-        self.board[0][2].pezzo, self.board[0][5].pezzo=Bishop("N", self.board[0][2]), Bishop("N", self.board[0][5])
-        self.board[7][2].pezzo, self.board[7][5].pezzo=Bishop("B", self.board[7][2]), Bishop("B", self.board[7][5])
-        self.board[0][3].pezzo, self.board[0][4].pezzo=King("N", self.board[0][3]), Queen("N", self.board[0][4])
-        self.board[7][3].pezzo, self.board[7][4].pezzo=King("B", self.board[7][3]), Queen("B", self.board[7][4])
+            self.board[i][1].pezzo = Pawn("N", self.board[i][1])
+            self.board[i][6].pezzo = Pawn("B", self.board[i][6])
+        self.board[0][0].pezzo, self.board[7][0].pezzo=Rook("N", self.board[0][0]), Rook("N", self.board[7][0])
+        self.board[0][7].pezzo, self.board[7][7].pezzo=Rook("B", self.board[0][7]), Rook("B", self.board[7][7])
+        self.board[1][0].pezzo, self.board[6][0].pezzo=Knight("N", self.board[1][0]), Knight("N", self.board[6][0])
+        self.board[1][7].pezzo, self.board[6][7].pezzo=Knight("B", self.board[1][7]), Knight("B", self.board[6][7])
+        self.board[2][0].pezzo, self.board[5][0].pezzo=Bishop("N", self.board[2][0]), Bishop("N", self.board[5][0])
+        self.board[2][7].pezzo, self.board[5][7].pezzo=Bishop("B", self.board[2][7]), Bishop("B", self.board[5][7])
+        self.board[3][0].pezzo, self.board[4][0].pezzo=King("N", self.board[3][0]), Queen("N", self.board[4][0])
+        self.board[3][7].pezzo, self.board[4][7].pezzo=King("B", self.board[3][7]), Queen("B", self.board[4][7])
 
 
     def draw(self):
-        for r in range(8):
-            for c in range(8):
-                self.board[r][c].draw()
+        for x in range(8):
+            for y in range(8):
+                self.board[x][y].draw()
         screen.blit(self.image, self.rect)
+    
+    def move(self, pos):
+        newpos=[pos[0]-self.x, pos[1]-self.y]
+        for linea in self.board:
+            for casella in linea:
+                if casella.rect.collidepoint(newpos) and casella.pezzo!=None:
+                    print(len(casella.pezzo.showmoves()))
+                    
 
 
 class Square:
@@ -54,7 +62,7 @@ class Square:
         self.y = y
         self.ytot = y*alt
 
-        self.coord = (x, y)
+        self.coord = (self.x, self.y)
         self.pos = (self.xtot, self.ytot)
 
         self.color = "light" if (x+y) % 2 == 0 else "dark"
@@ -86,8 +94,7 @@ class Pawn:
 
         self.pos = self.square.pos
         self.coord = self.square.coord
-        self.image = pygame.image.load("pb.png").convert_alpha(
-        ) if self.colore == "B" else pygame.image.load("pn.png").convert_alpha()
+        self.image = pygame.image.load("pb.png").convert_alpha() if self.colore == "B" else pygame.image.load("pn.png").convert_alpha()
         self.image = pygame.transform.scale(
             self.image, (self.square.larg, self.square.alt))
         self.rect = pygame.Rect(0, 0, self.square.larg, self.square.alt)
@@ -99,10 +106,10 @@ class Pawn:
         possmoves = []
         if self.colore == "N":
             if Scacchiera.board[self.coord[0]][self.coord[1]+1].pezzo == None:
-                possmoves.append(Scacchiera.board[self.coord[0]+1][self.coord[1]])
+                possmoves.append(Scacchiera.board[self.coord[0]][self.coord[1]+1])
         else:
             if Scacchiera.board[self.coord[0]][self.coord[1]-1].pezzo == None:
-                possmoves.append(Scacchiera.board[self.coord[0]-1][self.coord[1]])
+                possmoves.append(Scacchiera.board[self.coord[0]][self.coord[1]-1])
 
         return possmoves
 
@@ -211,13 +218,13 @@ while True:
 
     if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
         pos = list(pygame.mouse.get_pos())
-        pos[0]+=Scacchiera.x
-        pos[1]+=Scacchiera.y
-        for linea in Scacchiera.board:
-            for casella in linea:
-                if casella.rect.collidepoint(pos) and casella.pezzo!=None:
-                    possmoves=casella.pezzo.showmoves()
-                    print(len(possmoves))
+        # for linea in Scacchiera.board:
+        #     for casella in linea:
+        #         if casella.rect.collidepoint(pos) and casella.pezzo!=None:
+        #             possmoves=casella.pezzo.showmoves()
+        #             print(len(possmoves))
+        if Scacchiera.rect.collidepoint(pos):
+            Scacchiera.move(pos)
 
     Scacchiera.draw()
 
