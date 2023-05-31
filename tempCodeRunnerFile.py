@@ -1,2 +1,2 @@
-pos[0]+=Scacchiera.x
-        pos[1]+=Scacchiera.y
+casella.pezzo.rect.left=casella.xtot
+                        # casella.pezzo.rect.top=casella.ytot

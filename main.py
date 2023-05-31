@@ -77,12 +77,15 @@ class Board:
                             arrivo.cerchio=False
                         casella.pezzo=self.casellaprec.pezzo
                         casella.pezzo.coord=list(casella.coord)                     
-                        casella.pezzo.rect.left=casella.xtot
-                        casella.pezzo.rect.top=casella.ytot
                         casella.pezzo.square=casella
                         self.casellaprec.pezzo=None
                         self.casellaprec=None
                         self.possmoves.clear()
+
+                        if type(casella.pezzo)==King or type(casella.pezzo)==Pawn:
+                            casella.pezzo.mosso=True
+
+                        self.mossa+=1
 
                     
                     #se tocco su un pezzo alleato
@@ -103,15 +106,16 @@ class Board:
 
                         casella.pezzo=self.casellaprec.pezzo
                         casella.pezzo.coord=list(casella.coord)                     
-                        casella.pezzo.rect.left=casella.xtot
-                        casella.pezzo.rect.top=casella.ytot
                         casella.pezzo.square=casella
                         self.casellaprec.pezzo=None
                         self.casellaprec=None
                         self.possmoves.clear()
+                        if type(casella.pezzo)==King or type(casella.pezzo)==Pawn:
+                            casella.pezzo.mosso=True
+                        self.mossa+=1
 
 
-        self.mossa+=1
+        
 
 
                         
@@ -189,10 +193,10 @@ class Pawn:
             if Scacchiera.board[x][y+1].pezzo == None:
                 possmoves.append(Scacchiera.board[x][y+1])
             if x>0:
-                if Scacchiera.board[x-1][y+1].pezzo and Scacchiera.board[x-1][y+1].pezzo.colore != 'N':
+                if Scacchiera.board[x-1][y+1].pezzo!=None and Scacchiera.board[x-1][y+1].pezzo.colore != 'N':
                     possmoves.append(Scacchiera.board[x-1][y+1])
             if x<7:
-                if  Scacchiera.board[x+1][y+1].pezzo and Scacchiera.board[x+1][y+1].pezzo.colore != 'N':
+                if  Scacchiera.board[x+1][y+1].pezzo!=None and Scacchiera.board[x+1][y+1].pezzo.colore != 'N':
                     possmoves.append(Scacchiera.board[x+1][y+1])
             if not self.mosso and Scacchiera.board[x][y+1].pezzo == None and Scacchiera.board[x][y+2].pezzo == None:
                 possmoves.append(Scacchiera.board[x][y+2])
@@ -201,11 +205,11 @@ class Pawn:
             if Scacchiera.board[x][y-1].pezzo == None:
                 possmoves.append(Scacchiera.board[x][y-1])
             if x>0:
-                if Scacchiera.board[x-1][y-1].pezzo and  Scacchiera.board[x-1][y-1].pezzo.colore!= 'B':
-                    possmoves.append(Scacchiera.board[x-1][y+1])    
-            if x>7:
-                if Scacchiera.board[x+1][y-1].pezzo and Scacchiera.board[x+1][y-1].pezzo.colore !='B':
-                    possmoves.append(Scacchiera.board[x-1][y+1])
+                if Scacchiera.board[x-1][y-1].pezzo!=None and  Scacchiera.board[x-1][y-1].pezzo.colore!= 'B':
+                    possmoves.append(Scacchiera.board[x-1][y-1])    
+            if x<7:
+                if Scacchiera.board[x+1][y-1].pezzo!=None and Scacchiera.board[x+1][y-1].pezzo.colore !='B':
+                    possmoves.append(Scacchiera.board[x+1][y-1])
             if not self.mosso and Scacchiera.board[x][y-1].pezzo == None and Scacchiera.board[x][y-2].pezzo == None:
                 possmoves.append(Scacchiera.board[x][y-2])
         
@@ -492,7 +496,7 @@ class Rook:
         y=self.coord[1]
 
         #orizzontale
-        for i in range(x-1, 0, -1):
+        for i in range(x-1, -1, -1):
             if Scacchiera.board[i][y].pezzo == None:
                 mosse.append((i,y))
             else:
@@ -511,7 +515,7 @@ class Rook:
                 break
         
         #verticale
-        for i in range(y-1, 0, -1):
+        for i in range(y-1, -1, -1):
             if Scacchiera.board[x][i].pezzo is None:
                 mosse.append((x, i))
             else:
