@@ -2,6 +2,7 @@ import pygame
 import sys
 from pygame.locals import *
 pygame.init()
+pygame.font.init()
 WINDOW_SIZE = (1200, 680)
 screen = pygame.display.set_mode(WINDOW_SIZE)
 screen.fill((240, 240, 180))
@@ -12,6 +13,59 @@ clock = pygame.time.Clock()
 fps = 60
 
 
+disegnaschermo=True
+
+
+Font=pygame.font.SysFont("Calibri", 80)
+FontBottone=pygame.font.SysFont("Calibri", 30)
+class Bottone:
+    def __init__(self, surf, pos, dim, scritta):
+        self.surf=surf
+        self.dim=list(dim)
+        self.pos=list(pos)
+
+        self.scritta=FontBottone.render(scritta, True, "White")
+        self.rect=pygame.Rect(pos[0], pos[1], dim[0], dim[1])
+    
+
+    def disegna(self):
+        self.surf.blit(self.scritta, (self.pos[0]+self.dim[1]//10, self.pos[1]+self.dim[1]//2))
+
+
+class Schermata:
+    def __init__(self, surf) -> None:
+        self.surf=surf
+        self.surf.fill("Black")
+        self.scritta1=Font.render("Chess", True, "White")
+        self.scrittarect1=pygame.Rect(self.surf.get_width()//2-100, self.surf.get_height()//2-150, 600, 300)
+
+        self.bottone=Bottone(self.surf, (self.surf.get_width()//2-230, self.surf.get_height()//2), (300,200), "Clicca in qualsiasi punto per giocare")
+    def disegna(self):
+        self.surf.fill("Black")
+        self.bottone.disegna()
+        self.surf.blit(self.scritta1, self.scrittarect1)
+
+class Schermata_finale:
+    def __init__(self, surf, vincente=None) -> None:
+        self.surf=surf
+        self.surf.fill("Black")
+        if vincente=="B":
+            self.vincente="bianco"
+        elif vincente=="N":
+            self.vincente="nero"
+        else:
+            self.vincente="bel giuoco"
+        self.scritta1=Font.render(f"Ha vinto il {self.vincente}", True, "White")
+        self.scrittarect1=pygame.Rect(self.surf.get_width()//2-100, self.surf.get_height()//2-150, 600, 300)
+
+        self.bottone=Bottone(self.surf, (self.surf.get_width()//2-230, self.surf.get_height()//2), (300,200), "Clicca in qualsiasi punto per giocare ancora")
+    def disegna(self):
+        self.surf.fill("Black")
+        self.bottone.disegna()
+        self.surf.blit(self.scritta1, self.scrittarect1)
+
+schermo=Schermata(screen)
+schermofinale=Schermata_finale(screen)
 class Board:
     def __init__(self, screen, size) -> None:
         self.board = [[Square(self, y, x, size[0]/8, size[1]/8) for x in range(8)]
@@ -22,13 +76,20 @@ class Board:
         self.y = screen.get_height() // 2 - size[1] // 2
         self.rect = pygame.Rect(self.x, self.y, size[0], size[1])
 
+
         self.possmoves = []
         self.casellaprec = None
 
         self.mossa = 0
         self.scacco=False
-
+        self.matto=False
     def inizializza(self):
+        self.possmoves = []
+        self.casellaprec = None
+
+        self.mossa = 0
+        self.scacco=False
+        self.matto=False
         for i in range(8):
             self.board[i][1].pezzo = Pawn("N", self.board[i][1])
             self.board[i][6].pezzo = Pawn("B", self.board[i][6])
@@ -50,18 +111,19 @@ class Board:
             "B", self.board[3][7]), Queen("B", self.board[4][7])
 
     def draw(self):
-        # if self.mossa%2==0:
-        for x in range(8):
-            for y in range(8):
-                self.board[x][y].pos=[self.board[x][y].xtot, y*self.board[x][y].larg]
-                self.board[x][y].rect.top=y*self.board[x][y].larg
-                self.board[x][y].draw()
-        # else:
-        #     for x in range(8):
-        #         for y in range(8):
-        #             self.board[x][y].pos=[self.board[x][y].xtot, (7-y)*self.board[x][y].larg]
-        #             self.board[x][y].rect.top=(7-y)*self.board[x][y].larg
-        #             self.board[x][y].draw()
+        screen.fill((240, 240, 180))
+        if self.mossa%2==0:
+            for x in range(8):
+                for y in range(8):
+                    self.board[x][y].pos=[self.board[x][y].xtot, y*self.board[x][y].larg]
+                    self.board[x][y].rect.top=y*self.board[x][y].larg
+                    self.board[x][y].draw()
+        else:
+            for x in range(8):
+                for y in range(8):
+                    self.board[x][y].pos=[self.board[x][y].xtot, (7-y)*self.board[x][y].larg]
+                    self.board[x][y].rect.top=(7-y)*self.board[x][y].larg
+                    self.board[x][y].draw()
         screen.blit(self.image, self.rect)
 
 
@@ -258,10 +320,6 @@ class Board:
                     casellescacco.append((xre+1, yre-1))
 
 
-        if cond:
-            print([c for c in casellescacco])
-        return self.scacco
-
     def controllamatto(self):
         if self.controllascacco():
             colore="B" if self.mossa%2==0 else "N"
@@ -289,9 +347,20 @@ class Board:
             return True
         
         return False
+    
+
+    def controllapatta(self):
+        totmosse=[]
+        colore="B" if self.mossa%2==0 else "N"
+        if not self.controllascacco():
+            for linea in self.board:
+                for casella in linea:
+                    if casella.pezzo!=None and casella.pezzo.colore==colore:
+                        totmosse+=casella.pezzo.showmoves()
 
 
-
+        if len(totmosse)==0:
+            return True
 
     def move(self, pos):
         colore = "B" if self.mossa % 2 == 0 else "N"
@@ -330,6 +399,11 @@ class Board:
 
                     # se tocco su un pezzo alleato
                     if casella.pezzo != None and len(self.possmoves) > 0 and not casella in self.possmoves and casella.pezzo.colore == colore:
+                        if type(self.casellaprec.pezzo)==King and type(casella.pezzo)==Rook:
+                            self.casellaprec.pezzo, casella.pezzo=casella.pezzo, self.casellaprec.pezzo
+                            self.casellaprec.pezzo.coord, casella.pezzo.coord=self.casellaprec.coord,casella.coord
+                            self.casellaprec.pezzo.coord, casella.pezzo.coord=self.casellaprec.coord,casella.coord
+
                         for arrivo in self.possmoves:
                             arrivo.cerchio = False
                         self.possmoves.clear()
@@ -365,13 +439,15 @@ class Board:
                         self.casellaprec = None
                         self.possmoves.clear()
 
-                        if type(casella.pezzo) == King or type(casella.pezzo) == Pawn:
+                        if type(casella.pezzo) == King or type(casella.pezzo) == Pawn or type(casella.pezzo)==Rook:
                             casella.pezzo.mosso = True
                         
 
                         self.mossa += 1
-                        if  Scacchiera.controllamatto():
-                            pass
+                        if self.controllamatto():
+                            self.matto=True
+
+                            
 
 
                     # se tocco su un pezzo nemico che può essere catturato
@@ -386,13 +462,13 @@ class Board:
                         self.casellaprec.pezzo = None
                         self.casellaprec = None
                         self.possmoves.clear()
-                        if type(casella.pezzo) == King or type(casella.pezzo) == Pawn:
+                        if type(casella.pezzo) == King or type(casella.pezzo) == Pawn or type(casella.pezzo)==Rook:
                             casella.pezzo.mosso = True
 
 
                         self.mossa += 1
-                        if Scacchiera.controllamatto():
-                            pass
+                        if self.controllamatto():
+                            self.matto=True
 
 
 class Square:
@@ -517,6 +593,12 @@ class King:
                 square = Scacchiera.board[x1][y1]
                 if square.pezzo == None or square.pezzo.colore != self.colore:
                     moves.append(square)
+
+        if self.mosso==False:
+            if type(Scacchiera.board[x+3][y].pezzo)==Rook and Scacchiera.board[x+3][y].pezzo.mosso==False and Scacchiera.board[x+1][y].pezzo==None and Scacchiera.board[x+2][y].pezzo==None:
+                moves.append(Scacchiera.board[x+3][y])
+            if type(Scacchiera.board[x-4][y].pezzo)==Rook and Scacchiera.board[x-4][y].pezzo.mosso==False and Scacchiera.board[x-1][y].pezzo==None and Scacchiera.board[x-2][y].pezzo==None and Scacchiera.board[x-3][y].pezzo==None:
+                moves.append(Scacchiera.board[x-4][y])
         return moves
 
 
@@ -746,6 +828,7 @@ class Rook:
 
         self.square = square
 
+        self.mosso=False
         self.pos = list(self.square.pos)
         self.coord = list(self.square.coord)
         self.image = pygame.image.load("tb.png").convert_alpha(
@@ -813,13 +896,40 @@ while True:
             pygame.quit()
             sys.exit()
 
-    if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-        pos = list(pygame.mouse.get_pos())
+    
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            pos = list(pygame.mouse.get_pos())
+            disegnaschermo=False
 
-        if Scacchiera.rect.collidepoint(pos):
-            Scacchiera.move(pos)
+            if Scacchiera.rect.collidepoint(pos):
+                Scacchiera.move(pos)
+            if Scacchiera.matto:
+                if Scacchiera.mossa%2==0:
+                    vincente="N"
+                else:
+                    vincente="B"
+            if Scacchiera.controllapatta():
+                vincente="Pareggio"
+                
+        if Scacchiera.matto or Scacchiera.controllapatta():
+            fine=True
+            if vincente=="N":
+                schermofinale.vincente="nero"
+            elif vincente=="B":
+                schermofinale.vincente="bianco"
+            else:
+                schermofinale.vincente="bel giuoco"
+            schermofinale.disegna()
+        else:
+            if not disegnaschermo:        
+                Scacchiera.draw()
+            else:
+                schermo.disegna()
 
-    Scacchiera.draw()
+
+        if fine and event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            Scacchiera.inizializza()
+            fine=False
 
     pygame.display.update()
     clock.tick(fps)
