@@ -26,6 +26,7 @@ class Board:
         self.casellaprec = None
 
         self.mossa = 0
+        self.scacco=False
 
     def inizializza(self):
         for i in range(8):
@@ -61,8 +62,182 @@ class Board:
                     self.board[x][y].pos=[self.board[x][y].xtot, (7-y)*self.board[x][y].larg]
                     self.board[x][y].rect.top=(7-y)*self.board[x][y].larg
                     self.board[x][y].draw()
-
         screen.blit(self.image, self.rect)
+
+
+    def controllascacco(self):
+        self.scacco=False
+        colore="B" if self.mossa%2==0 else "N"
+        for linea in Scacchiera.board:
+            for casella in linea:
+                if type(casella.pezzo)==King and casella.pezzo.colore==colore:
+                    xre=casella.coord[0]
+                    yre=casella.coord[1]
+
+        x=xre+1
+        y=yre
+        while x<8:
+            casella=Scacchiera.board[x][y]
+            if casella.pezzo!=None and casella.pezzo.colore==colore:
+                break
+            if casella.pezzo!=None and casella.pezzo.colore!=colore:
+                if type(casella.pezzo)==Rook or type(casella.pezzo)==Queen:
+                    self.scacco=True
+                    break
+                else:
+                    break
+            x+=1
+
+        x=xre-1
+        y=yre
+        while x>=0:
+            casella=Scacchiera.board[x][y]
+            if casella.pezzo!=None and casella.pezzo.colore==colore:
+                break
+            if casella.pezzo!=None and casella.pezzo.colore!=colore:
+                if type(casella.pezzo)==Rook or type(casella.pezzo)==Queen:
+                    self.scacco=True
+                    break
+                else:
+                    break
+            x-=1
+
+        x=xre
+        y=yre+1
+        while y<8:
+            casella=Scacchiera.board[x][y]
+            if casella.pezzo!=None and casella.pezzo.colore==colore:
+                break
+            if casella.pezzo!=None and casella.pezzo.colore!=colore:
+                if type(casella.pezzo)==Rook or type(casella.pezzo)==Queen:
+                    self.scacco=True
+                    break
+                else:
+                    break
+            y+=1
+
+
+        x=xre
+        y=yre-1
+        while y>=0:
+            casella=Scacchiera.board[x][y]
+            if casella.pezzo!=None and casella.pezzo.colore==colore:
+                break
+            if casella.pezzo!=None and casella.pezzo.colore!=colore:
+                if type(casella.pezzo)==Rook or type(casella.pezzo)==Queen:
+                    self.scacco=True
+                    break
+                else:
+                    break
+            y-=1
+
+
+
+        x=xre+1
+        y=yre+1
+        while x<8 and y<8 :
+            casella=Scacchiera.board[x][y]
+            if casella.pezzo!=None and casella.pezzo.colore==colore:
+                break
+            if casella.pezzo!=None and casella.pezzo.colore!=colore:
+                if type(casella.pezzo)==Bishop or type(casella.pezzo)==Queen:
+                    self.scacco=True
+                    break
+                else:
+                    break
+            x+=1
+            y+=1
+
+
+        x=xre-1
+        y=yre+1
+        while x>=0 and y<8 :
+            casella=Scacchiera.board[x][y]
+            if casella.pezzo!=None and casella.pezzo.colore==colore:
+                break
+            if casella.pezzo!=None and casella.pezzo.colore!=colore:
+                if type(casella.pezzo)==Bishop or type(casella.pezzo)==Queen:
+                    self.scacco=True
+                    break
+                else:
+                    break
+            x-=1
+            y+=1
+
+        
+        x=xre+1
+        y=yre-1
+        while x<8 and y>=0:
+            casella=Scacchiera.board[x][y]
+            if casella.pezzo!=None and casella.pezzo.colore==colore:
+                break
+            if casella.pezzo!=None and casella.pezzo.colore!=colore:
+                if type(casella.pezzo)==Bishop or type(casella.pezzo)==Queen:
+                    self.scacco=True
+                    break
+                else:
+                    break
+            x+=1
+            y-=1
+
+
+        x=xre-1
+        y=yre-1
+        while x>=0 and y>=0:
+            casella=Scacchiera.board[x][y]
+            if casella.pezzo!=None and casella.pezzo.colore==colore:
+                break
+            if casella.pezzo!=None and casella.pezzo.colore!=colore:
+                if type(casella.pezzo)==Bishop or type(casella.pezzo)==Queen:
+                    self.scacco=True
+                    break
+                else:
+                    break
+            x-=1
+            y-=1
+
+        mossecavallo=[]
+        aggiuntamosse=[(2, 1), (1, 2), (-1, 2), (-2, 1), (-2, -1), (-1, -2), (1, -2), (2, -1)]
+        for (u, v) in aggiuntamosse:
+            if xre+u>=0 and xre+u<8 and yre+v>=0 and yre+v<8:
+                mossecavallo.append((Scacchiera.board[xre+u][yre+v]))
+
+        for casella in mossecavallo:
+            if casella.pezzo!=None and type(casella.pezzo)==Knight and casella.pezzo.colore!=colore:
+                self.scacco=True
+                break
+
+        mossere=[]
+        aggiuntamosse=[(1, 0), (-1, 0), (0, 1), (0, -1), (1, 1), (-1, -1), (1, -1), (-1, 1)]
+        for (u, v) in aggiuntamosse:
+            if xre+u>=0 and xre+u<8 and yre+v>=0 and yre+v<8:
+                mossere.append((Scacchiera.board[xre+u][yre+v]))
+
+        for casella in mossere:
+            if casella.pezzo!=None and type(casella.pezzo)==King and casella.pezzo.colore!=colore:
+                self.scacco=True
+                break
+
+
+        if colore=="N":
+            if xre-1>=0 and xre-1<=7 and yre+1>=0 and yre+1<=7:
+                if Scacchiera.board[xre-1][yre+1].pezzo!=None and type(Scacchiera.board[xre-1][yre+1].pezzo)==Pawn and Scacchiera.board[xre-1][yre+1].pezzo.colore!=colore:
+                    self.scacco=True
+            
+            if xre+1>=0 and xre+1<=7 and yre+1>=0 and yre+1<=7:
+                if Scacchiera.board[xre+1][yre+1].pezzo!=None and type(Scacchiera.board[xre+1][yre+1].pezzo)==Pawn and Scacchiera.board[xre+1][yre+1].pezzo.colore!=colore:
+                    self.scacco=True
+
+        if colore=="B":
+            if xre-1>=0 and xre-1<=7 and yre-1>=0 and yre-1<=7:
+                if Scacchiera.board[xre-1][yre-1].pezzo!=None and type(Scacchiera.board[xre-1][yre-1].pezzo)==Pawn and Scacchiera.board[xre-1][yre-1].pezzo.colore!=colore:
+                    self.scacco=True
+            
+            if xre+1>=0 and xre+1<=7 and yre-1>=0 and yre-1<=7:
+                if Scacchiera.board[xre+1][yre-1].pezzo!=None and type(Scacchiera.board[xre+1][yre-1].pezzo)==Pawn and Scacchiera.board[xre+1][yre-1].pezzo.colore!=colore:
+                    self.scacco=True
+
+        return self.scacco
 
     def move(self, pos):
         colore = "B" if self.mossa % 2 == 0 else "N"
@@ -97,6 +272,8 @@ class Board:
 
                         if type(casella.pezzo) == King or type(casella.pezzo) == Pawn:
                             casella.pezzo.mosso = True
+                        
+                        print(Scacchiera.controllascacco())
 
                         self.mossa += 1
 
@@ -126,6 +303,8 @@ class Board:
                             casella.pezzo.mosso = True
                         self.mossa += 1
 
+                        print(Scacchiera.controllascacco())
+
 
 class Square:
     def __init__(self, board, x, y, larg, alt, pezzo=None, cerchio=False) -> None:
@@ -138,7 +317,7 @@ class Square:
         self.y = int(y)
         self.ytot = int(y*alt)
 
-        self.coord = (self.x, self.y)
+        self.coord = [self.x, self.y]
         self.pos = [self.xtot, self.ytot]
 
         self.color = "light" if (x+y) % 2 == 0 else "dark"
